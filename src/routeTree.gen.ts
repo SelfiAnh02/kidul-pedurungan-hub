@@ -9,38 +9,82 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProfilRouteImport } from './routes/profil'
+import { Route as KegiatanRouteImport } from './routes/kegiatan'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RtRtIdRouteImport } from './routes/rt.$rtId'
 
+const ProfilRoute = ProfilRouteImport.update({
+  id: '/profil',
+  path: '/profil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KegiatanRoute = KegiatanRouteImport.update({
+  id: '/kegiatan',
+  path: '/kegiatan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RtRtIdRoute = RtRtIdRouteImport.update({
+  id: '/rt/$rtId',
+  path: '/rt/$rtId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/kegiatan': typeof KegiatanRoute
+  '/profil': typeof ProfilRoute
+  '/rt/$rtId': typeof RtRtIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/kegiatan': typeof KegiatanRoute
+  '/profil': typeof ProfilRoute
+  '/rt/$rtId': typeof RtRtIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/kegiatan': typeof KegiatanRoute
+  '/profil': typeof ProfilRoute
+  '/rt/$rtId': typeof RtRtIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/kegiatan' | '/profil' | '/rt/$rtId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/kegiatan' | '/profil' | '/rt/$rtId'
+  id: '__root__' | '/' | '/kegiatan' | '/profil' | '/rt/$rtId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  KegiatanRoute: typeof KegiatanRoute
+  ProfilRoute: typeof ProfilRoute
+  RtRtIdRoute: typeof RtRtIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/profil': {
+      id: '/profil'
+      path: '/profil'
+      fullPath: '/profil'
+      preLoaderRoute: typeof ProfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kegiatan': {
+      id: '/kegiatan'
+      path: '/kegiatan'
+      fullPath: '/kegiatan'
+      preLoaderRoute: typeof KegiatanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +92,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rt/$rtId': {
+      id: '/rt/$rtId'
+      path: '/rt/$rtId'
+      fullPath: '/rt/$rtId'
+      preLoaderRoute: typeof RtRtIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  KegiatanRoute: KegiatanRoute,
+  ProfilRoute: ProfilRoute,
+  RtRtIdRoute: RtRtIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
