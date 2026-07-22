@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Megaphone, CalendarDays } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Megaphone, CalendarDays, Loader2, AlertCircle } from "lucide-react";
 import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
-import { pengumumanRW, kegiatanRW } from "@/data/rw";
+import { kegiatanRW } from "@/data/rw";
+import { pengumumanRWQueryOptions } from "@/data/pengumuman-api";
 
 export const Route = createFileRoute("/kegiatan")({
   head: () => ({
@@ -20,13 +22,24 @@ export const Route = createFileRoute("/kegiatan")({
       },
     ],
   }),
+  loader: ({ context }) =>
+    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: KegiatanPage,
 });
 
 function KegiatanPage() {
-  const pengumumanSorted = [...pengumumanRW].sort(
-    (a, b) => +new Date(b.tanggal) - +new Date(a.tanggal),
-  );
+  const {
+    data: pengumuman,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery(pengumumanRWQueryOptions);
+
+  const pengumumanSorted = (pengumuman ?? [])
+    .slice()
+    .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal));
+
   const kegiatanSorted = [...kegiatanRW].sort(
     (a, b) => +new Date(a.tanggal) - +new Date(b.tanggal),
   );
@@ -48,11 +61,39 @@ function KegiatanPage() {
         <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <Megaphone className="h-3.5 w-3.5" /> Pengumuman
         </div>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {pengumumanSorted.map((p) => (
-            <AnnouncementCard key={p.id} item={p} />
-          ))}
-        </div>
+
+        {isLoading ? (
+          <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Memuat pengumuman terbaru…
+          </div>
+        ) : isError ? (
+          <div className="flex flex-col items-start gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm">
+            <div className="flex items-center gap-2 font-medium text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              Gagal memuat pengumuman
+            </div>
+            <p className="text-muted-foreground">
+              {(error as Error)?.message ?? "Terjadi kesalahan tak terduga."}
+            </p>
+            <button
+              onClick={() => refetch()}
+              className="inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Coba lagi
+            </button>
+          </div>
+        ) : pengumumanSorted.length === 0 ? (
+          <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+            Belum ada pengumuman.
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {pengumumanSorted.map((p) => (
+              <AnnouncementCard key={p.id} item={p} />
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="mt-14">
@@ -68,3 +109,4 @@ function KegiatanPage() {
     </div>
   );
 }
+
