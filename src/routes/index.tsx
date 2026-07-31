@@ -38,12 +38,21 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: ({ context }) =>
+    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: Index,
 });
 
 function Index() {
   const ketua = pengurusRW[0];
-  const pengumumanTerbaru = [...pengumumanRW]
+  const {
+    data: pengumuman,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(pengumumanRWQueryOptions);
+  const pengumumanTerbaru = (pengumuman ?? [])
+    .slice()
     .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal))
     .slice(0, 3);
   const kegiatanTerdekat = [...kegiatanRW]
