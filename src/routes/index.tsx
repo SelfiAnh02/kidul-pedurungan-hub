@@ -1,18 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Users, Megaphone, CalendarDays } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowRight,
+  Users,
+  Megaphone,
+  CalendarDays,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
 import {
   infoRW,
-  pengumumanRW,
   kegiatanRW,
   sambutanKetua,
   pengurusRW,
   rtList,
   dataRT,
 } from "@/data/rw";
+import { pengumumanRWQueryOptions } from "@/data/pengumuman-api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,12 +38,21 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: ({ context }) =>
+    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: Index,
 });
 
 function Index() {
   const ketua = pengurusRW[0];
-  const pengumumanTerbaru = [...pengumumanRW]
+  const {
+    data: pengumuman,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(pengumumanRWQueryOptions);
+  const pengumumanTerbaru = (pengumuman ?? [])
+    .slice()
     .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal))
     .slice(0, 3);
   const kegiatanTerdekat = [...kegiatanRW]
@@ -115,11 +132,27 @@ function Index() {
               <Link to="/kegiatan">Lihat semua <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {pengumumanTerbaru.map((p) => (
-              <AnnouncementCard key={p.id} item={p} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Memuat pengumuman terbaru…
+            </div>
+          ) : isError ? (
+            <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              {(error as Error)?.message ?? "Gagal memuat pengumuman."}
+            </div>
+          ) : pengumumanTerbaru.length === 0 ? (
+            <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              Belum ada pengumuman.
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {pengumumanTerbaru.map((p) => (
+                <AnnouncementCard key={p.id} item={p} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Kegiatan terdekat */}
