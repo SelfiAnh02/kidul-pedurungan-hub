@@ -1,18 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Users, Megaphone, CalendarDays } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowRight,
+  Users,
+  Megaphone,
+  CalendarDays,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
 import {
   infoRW,
-  pengumumanRW,
   kegiatanRW,
   sambutanKetua,
   pengurusRW,
   rtList,
   dataRT,
 } from "@/data/rw";
+import { pengumumanRWQueryOptions } from "@/data/pengumuman-api";
 
 export const Route = createFileRoute("/")({
   head: () => ({
