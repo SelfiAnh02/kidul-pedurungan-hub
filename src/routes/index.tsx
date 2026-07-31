@@ -132,11 +132,27 @@ function Index() {
               <Link to="/kegiatan">Lihat semua <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {pengumumanTerbaru.map((p) => (
-              <AnnouncementCard key={p.id} item={p} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Memuat pengumuman terbaru…
+            </div>
+          ) : isError ? (
+            <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              {(error as Error)?.message ?? "Gagal memuat pengumuman."}
+            </div>
+          ) : pengumumanTerbaru.length === 0 ? (
+            <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              Belum ada pengumuman.
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {pengumumanTerbaru.map((p) => (
+                <AnnouncementCard key={p.id} item={p} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Kegiatan terdekat */}
