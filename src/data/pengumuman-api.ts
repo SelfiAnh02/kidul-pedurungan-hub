@@ -2,14 +2,20 @@ import { queryOptions } from "@tanstack/react-query";
 import type { Pengumuman } from "./rw";
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxw8o0mWvFf_3FfydfzM34q7M4qUZnnKESMPDAXXiw-5fWQ8s7jp79D7M-KN0nQK5eR/exec?sheet=pengumuman_rw";
+  "https://script.google.com/macros/s/AKfycbxw8o0mWvFf_3FfydfzM34q7M4qUZnnKESMPDAXXiw-5fWQ8s7jp79D7M-KN0nQK5eR/exec?sheet=Form%20Responses%201";
 
 type ApiRow = {
   Judul?: string;
-  Tanggal?: string;
-  Kategori?: string;
   Isi?: string;
+  [key: string]: unknown;
 };
+
+function getNormalizedField(row: ApiRow, fieldName: string): string {
+  const entry = Object.entries(row).find(
+    ([key]) => key.replace(/\s+/g, " ").trim() === fieldName,
+  );
+  return typeof entry?.[1] === "string" ? entry[1] : "";
+}
 
 export async function fetchPengumumanRW(): Promise<Pengumuman[]> {
   const res = await fetch(API_URL);
@@ -25,8 +31,8 @@ export async function fetchPengumumanRW(): Promise<Pengumuman[]> {
     .map((r, i) => ({
       id: `api-${i}`,
       judul: (r.Judul ?? "").trim() || "(Tanpa judul)",
-      tanggal: r.Tanggal ?? new Date().toISOString(),
-      kategori: (r.Kategori ?? "Umum").trim() || "Umum",
+      tanggal: getNormalizedField(r, "Tanggal") || new Date().toISOString(),
+      kategori: getNormalizedField(r, "Kategori").trim() || "Umum",
       ringkasan: (r.Isi ?? "").trim(),
     }));
 }
