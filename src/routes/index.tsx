@@ -41,8 +41,6 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) =>
-    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: Index,
 });
 
@@ -54,13 +52,21 @@ function Index() {
     isError,
     error,
   } = useQuery(pengumumanRWQueryOptions);
+  const {
+    data: kegiatan,
+    isLoading: kegiatanLoading,
+    isError: kegiatanError,
+    error: kegiatanErrorObj,
+  } = useQuery(kegiatanRWQueryOptions);
   const pengumumanTerbaru = (pengumuman ?? [])
     .slice()
     .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal))
     .slice(0, 3);
-  const kegiatanTerdekat = [...kegiatanRW]
+  const kegiatanTerdekat = (kegiatan ?? [])
+    .slice()
     .sort((a, b) => +new Date(a.tanggal) - +new Date(b.tanggal))
     .slice(0, 3);
+
 
   return (
     <div>
