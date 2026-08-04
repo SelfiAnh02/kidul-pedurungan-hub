@@ -177,11 +177,28 @@ function Index() {
               <Link to="/kegiatan">Lihat semua <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {kegiatanTerdekat.map((k) => (
-              <EventCard key={k.id} item={k} />
-            ))}
-          </div>
+          {kegiatanLoading ? (
+            <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Memuat jadwal kegiatan…
+            </div>
+          ) : kegiatanError ? (
+            <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              {(kegiatanErrorObj as Error)?.message ?? "Gagal memuat kegiatan."}
+            </div>
+          ) : kegiatanTerdekat.length === 0 ? (
+            <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              Belum ada kegiatan terjadwal.
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {kegiatanTerdekat.map((k) => (
+                <EventCard key={k.id} item={k} />
+              ))}
+            </div>
+          )}
+
         </section>
 
         {/* RT navigation */}
