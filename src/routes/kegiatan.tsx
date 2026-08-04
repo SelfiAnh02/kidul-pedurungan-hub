@@ -3,8 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Megaphone, CalendarDays, Loader2, AlertCircle } from "lucide-react";
 import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
-import { kegiatanRW } from "@/data/rw";
-import { pengumumanRWQueryOptions } from "@/data/pengumuman-api";
+import {
+  pengumumanRWQueryOptions,
+  kegiatanRWQueryOptions,
+} from "@/data/pengumuman-api";
+
 
 export const Route = createFileRoute("/kegiatan")({
   head: () => ({
