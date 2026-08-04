@@ -109,11 +109,39 @@ function KegiatanPage() {
         <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <CalendarDays className="h-3.5 w-3.5" /> Jadwal Kegiatan
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          {kegiatanSorted.map((k) => (
-            <EventCard key={k.id} item={k} />
-          ))}
-        </div>
+        {kegiatanLoading ? (
+          <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Memuat jadwal kegiatan…
+          </div>
+        ) : kegiatanError ? (
+          <div className="flex flex-col items-start gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm">
+            <div className="flex items-center gap-2 font-medium text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              Gagal memuat jadwal kegiatan
+            </div>
+            <p className="text-muted-foreground">
+              {(kegiatanErrorObj as Error)?.message ?? "Terjadi kesalahan tak terduga."}
+            </p>
+            <button
+              onClick={() => refetchKegiatan()}
+              className="inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Coba lagi
+            </button>
+          </div>
+        ) : kegiatanSorted.length === 0 ? (
+          <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+            Belum ada kegiatan terjadwal.
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {kegiatanSorted.map((k) => (
+              <EventCard key={k.id} item={k} />
+            ))}
+          </div>
+        )}
+
       </section>
     </div>
   );
