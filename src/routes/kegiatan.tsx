@@ -3,8 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { Megaphone, CalendarDays, Loader2, AlertCircle } from "lucide-react";
 import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
-import { kegiatanRW } from "@/data/rw";
-import { pengumumanRWQueryOptions } from "@/data/pengumuman-api";
+import {
+  pengumumanRWQueryOptions,
+  kegiatanRWQueryOptions,
+} from "@/data/pengumuman-api";
+
 
 export const Route = createFileRoute("/kegiatan")({
   head: () => ({
@@ -22,8 +25,6 @@ export const Route = createFileRoute("/kegiatan")({
       },
     ],
   }),
-  loader: ({ context }) =>
-    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: KegiatanPage,
 });
 
@@ -35,14 +36,22 @@ function KegiatanPage() {
     error,
     refetch,
   } = useQuery(pengumumanRWQueryOptions);
+  const {
+    data: kegiatan,
+    isLoading: kegiatanLoading,
+    isError: kegiatanError,
+    error: kegiatanErrorObj,
+    refetch: refetchKegiatan,
+  } = useQuery(kegiatanRWQueryOptions);
 
   const pengumumanSorted = (pengumuman ?? [])
     .slice()
     .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal));
 
-  const kegiatanSorted = [...kegiatanRW].sort(
-    (a, b) => +new Date(a.tanggal) - +new Date(b.tanggal),
-  );
+  const kegiatanSorted = (kegiatan ?? [])
+    .slice()
+    .sort((a, b) => +new Date(a.tanggal) - +new Date(b.tanggal));
+
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
@@ -100,11 +109,39 @@ function KegiatanPage() {
         <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           <CalendarDays className="h-3.5 w-3.5" /> Jadwal Kegiatan
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          {kegiatanSorted.map((k) => (
-            <EventCard key={k.id} item={k} />
-          ))}
-        </div>
+        {kegiatanLoading ? (
+          <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Memuat jadwal kegiatan…
+          </div>
+        ) : kegiatanError ? (
+          <div className="flex flex-col items-start gap-3 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm">
+            <div className="flex items-center gap-2 font-medium text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              Gagal memuat jadwal kegiatan
+            </div>
+            <p className="text-muted-foreground">
+              {(kegiatanErrorObj as Error)?.message ?? "Terjadi kesalahan tak terduga."}
+            </p>
+            <button
+              onClick={() => refetchKegiatan()}
+              className="inline-flex items-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+            >
+              Coba lagi
+            </button>
+          </div>
+        ) : kegiatanSorted.length === 0 ? (
+          <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+            Belum ada kegiatan terjadwal.
+          </div>
+        ) : (
+          <div className="grid gap-4 md:grid-cols-2">
+            {kegiatanSorted.map((k) => (
+              <EventCard key={k.id} item={k} />
+            ))}
+          </div>
+        )}
+
       </section>
     </div>
   );

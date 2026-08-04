@@ -14,13 +14,16 @@ import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
 import {
   infoRW,
-  kegiatanRW,
   sambutanKetua,
   pengurusRW,
   rtList,
   dataRT,
 } from "@/data/rw";
-import { pengumumanRWQueryOptions } from "@/data/pengumuman-api";
+import {
+  pengumumanRWQueryOptions,
+  kegiatanRWQueryOptions,
+} from "@/data/pengumuman-api";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,8 +41,6 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) =>
-    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: Index,
 });
 
@@ -51,13 +52,21 @@ function Index() {
     isError,
     error,
   } = useQuery(pengumumanRWQueryOptions);
+  const {
+    data: kegiatan,
+    isLoading: kegiatanLoading,
+    isError: kegiatanError,
+    error: kegiatanErrorObj,
+  } = useQuery(kegiatanRWQueryOptions);
   const pengumumanTerbaru = (pengumuman ?? [])
     .slice()
     .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal))
     .slice(0, 3);
-  const kegiatanTerdekat = [...kegiatanRW]
+  const kegiatanTerdekat = (kegiatan ?? [])
+    .slice()
     .sort((a, b) => +new Date(a.tanggal) - +new Date(b.tanggal))
     .slice(0, 3);
+
 
   return (
     <div>
@@ -168,11 +177,28 @@ function Index() {
               <Link to="/kegiatan">Lihat semua <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {kegiatanTerdekat.map((k) => (
-              <EventCard key={k.id} item={k} />
-            ))}
-          </div>
+          {kegiatanLoading ? (
+            <div className="flex items-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Memuat jadwal kegiatan…
+            </div>
+          ) : kegiatanError ? (
+            <div className="flex items-center gap-2 rounded-md border border-destructive/40 bg-destructive/5 p-6 text-sm text-destructive">
+              <AlertCircle className="h-4 w-4" />
+              {(kegiatanErrorObj as Error)?.message ?? "Gagal memuat kegiatan."}
+            </div>
+          ) : kegiatanTerdekat.length === 0 ? (
+            <div className="rounded-md border border-dashed p-6 text-sm text-muted-foreground">
+              Belum ada kegiatan terjadwal.
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {kegiatanTerdekat.map((k) => (
+                <EventCard key={k.id} item={k} />
+              ))}
+            </div>
+          )}
+
         </section>
 
         {/* RT navigation */}
