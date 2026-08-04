@@ -25,8 +25,6 @@ export const Route = createFileRoute("/kegiatan")({
       },
     ],
   }),
-  loader: ({ context }) =>
-    context.queryClient.prefetchQuery(pengumumanRWQueryOptions),
   component: KegiatanPage,
 });
 
@@ -38,14 +36,22 @@ function KegiatanPage() {
     error,
     refetch,
   } = useQuery(pengumumanRWQueryOptions);
+  const {
+    data: kegiatan,
+    isLoading: kegiatanLoading,
+    isError: kegiatanError,
+    error: kegiatanErrorObj,
+    refetch: refetchKegiatan,
+  } = useQuery(kegiatanRWQueryOptions);
 
   const pengumumanSorted = (pengumuman ?? [])
     .slice()
     .sort((a, b) => +new Date(b.tanggal) - +new Date(a.tanggal));
 
-  const kegiatanSorted = [...kegiatanRW].sort(
-    (a, b) => +new Date(a.tanggal) - +new Date(b.tanggal),
-  );
+  const kegiatanSorted = (kegiatan ?? [])
+    .slice()
+    .sort((a, b) => +new Date(a.tanggal) - +new Date(b.tanggal));
+
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
