@@ -71,9 +71,9 @@ function RTPage() {
               className="absolute inset-0 -z-20 h-full w-full object-cover"
               loading="eager"
             />
-            <div className="absolute inset-0 -z-10 bg-secondary/80 mix-blend-multiply" />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/95 via-primary/70 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-background/40 to-transparent" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/90 via-primary/55 to-primary/15" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary/70 via-transparent to-primary/25" />
+
           </>
         )}
         <div className="relative mx-auto max-w-6xl px-4 py-14 md:py-20">
