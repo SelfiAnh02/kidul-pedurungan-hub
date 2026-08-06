@@ -57,23 +57,38 @@ function RTPage() {
     (a, b) => +new Date(a.tanggal) - +new Date(b.tanggal),
   );
 
+  const bg = headerBg[rtId];
+
   return (
     <div>
       {/* Header */}
-      <section className="border-b border-border bg-secondary text-secondary-foreground">
-        <div className="mx-auto max-w-6xl px-4 py-10">
+      <section className="relative isolate overflow-hidden border-b border-border bg-secondary text-secondary-foreground">
+        {bg && (
+          <>
+            <img
+              src={bg}
+              alt={`Suasana lingkungan RT ${rtId} RW 02 Pedurungan Kidul`}
+              className="absolute inset-0 -z-20 h-full w-full object-cover"
+              loading="eager"
+            />
+            <div className="absolute inset-0 -z-10 bg-secondary/80 mix-blend-multiply" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/95 via-primary/70 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-gradient-to-t from-background/40 to-transparent" />
+          </>
+        )}
+        <div className="relative mx-auto max-w-6xl px-4 py-14 md:py-20">
           <Button asChild variant="ghost" size="sm" className="mb-4 text-secondary-foreground hover:bg-secondary-foreground/10 hover:text-secondary-foreground">
             <Link to="/"><ArrowLeft className="mr-1 h-4 w-4" /> Beranda</Link>
           </Button>
           <div className="grid gap-6 md:grid-cols-[auto_1fr] md:items-center">
-            <div className="grid h-24 w-24 place-items-center rounded-md bg-primary-foreground/10 font-serif text-4xl font-bold">
+            <div className="grid h-24 w-24 place-items-center rounded-md border border-primary-foreground/20 bg-primary-foreground/10 font-serif text-4xl font-bold backdrop-blur-sm">
               RT {rtId}
             </div>
             <div>
               <div className="text-xs font-medium uppercase tracking-wider opacity-70">
                 RW 02 Pedurungan Kidul
               </div>
-              <h1 className="mt-1 font-serif text-3xl font-bold sm:text-4xl">
+              <h1 className="mt-1 font-serif text-3xl font-bold drop-shadow-sm sm:text-4xl">
                 Rukun Tetangga {rtId}
               </h1>
               <p className="mt-2 opacity-90">Ketua RT: <span className="font-semibold">{data.ketua}</span></p>
@@ -81,6 +96,7 @@ function RTPage() {
           </div>
         </div>
       </section>
+
 
       <div className="mx-auto max-w-6xl px-4 py-10">
         {/* Info stats */}
