@@ -57,7 +57,7 @@ function RTPage() {
     (a, b) => +new Date(a.tanggal) - +new Date(b.tanggal),
   );
 
-  const bg = headerBg[rtId];
+  const bg = headerBg[rtId as RTId];
 
   return (
     <div>
