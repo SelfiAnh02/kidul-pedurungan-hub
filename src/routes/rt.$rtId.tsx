@@ -68,11 +68,12 @@ function RTPage() {
             <img
               src={bg}
               alt={`Suasana lingkungan RT ${rtId} RW 02 Pedurungan Kidul`}
-              className="absolute inset-0 -z-20 h-full w-full object-cover"
+              className="absolute inset-0 -z-20 h-full w-full object-cover object-[center_35%]"
               loading="eager"
             />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/90 via-primary/55 to-primary/15" />
-            <div className="absolute inset-0 -z-10 bg-gradient-to-t from-primary/70 via-transparent to-primary/25" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-b from-primary/90 via-primary/60 to-primary/25" />
+            <div className="absolute inset-0 -z-10 bg-gradient-to-r from-primary/70 via-primary/20 to-transparent" />
+
 
           </>
         )}
