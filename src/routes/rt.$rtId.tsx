@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { AnnouncementCard } from "@/components/announcement-card";
 import { EventCard } from "@/components/event-card";
 import { dataRT, rtList, type RTId } from "@/data/rw";
+import rt04Header from "@/assets/rt04-header.jpg.asset.json";
+
+const headerBg: Partial<Record<RTId, string>> = {
+  "04": rt04Header.url,
+};
 
 export const Route = createFileRoute("/rt/$rtId")({
   loader: ({ params }) => {
